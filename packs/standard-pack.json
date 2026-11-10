@@ -1,0 +1,627 @@
+{
+ "app": "netops-standard-pack",
+ "version": "2026.11.1",
+ "updated": "2026-11-10",
+ "rule": "v=1: 공식/공개 자료로 문법 확인된 줄, v=0: [확인 필요] — 주석 처리되어 나오며 장비 매뉴얼로 확인 후 사용",
+ "vars": [
+  {
+   "k": "HOSTNAME",
+   "label": "호스트명",
+   "def": "SW-01"
+  },
+  {
+   "k": "DOMAIN",
+   "label": "도메인",
+   "def": "example.local"
+  },
+  {
+   "k": "ADMIN_USER",
+   "label": "관리자 계정",
+   "def": "netadmin"
+  },
+  {
+   "k": "ADMIN_PW",
+   "label": "관리자 비밀번호",
+   "def": "<비밀번호-직접입력>",
+   "secret": 1
+  },
+  {
+   "k": "NTP1",
+   "label": "NTP 서버 1",
+   "def": "192.0.2.10"
+  },
+  {
+   "k": "NTP2",
+   "label": "NTP 서버 2",
+   "def": "192.0.2.11"
+  },
+  {
+   "k": "SYSLOG1",
+   "label": "Syslog 서버",
+   "def": "192.0.2.20"
+  },
+  {
+   "k": "SNMP_USER",
+   "label": "SNMPv3 사용자",
+   "def": "nms"
+  },
+  {
+   "k": "SNMP_GROUP",
+   "label": "SNMPv3 그룹",
+   "def": "NMS-RO"
+  },
+  {
+   "k": "SNMP_VIEW",
+   "label": "SNMP view (A10)",
+   "def": "all"
+  },
+  {
+   "k": "SNMP_AUTH",
+   "label": "SNMP 인증 암호",
+   "def": "<인증암호-직접입력>",
+   "secret": 1
+  },
+  {
+   "k": "SNMP_PRIV",
+   "label": "SNMP 암호화 암호",
+   "def": "<암호화암호-직접입력>",
+   "secret": 1
+  },
+  {
+   "k": "BANNER",
+   "label": "접속 경고 문구",
+   "def": "Authorized access only"
+  }
+ ],
+ "items": [
+  {
+   "id": "cisco-iosxe",
+   "vendor": "Cisco",
+   "os": "IOS-XE",
+   "title": "Cisco IOS-XE 기본 보안·관리",
+   "comment": "!",
+   "sources": [
+    "https://www.cisco.com/c/en/us/support/docs/switches/catalyst-9500-series-switches/224891-configure-snmpv2c-v3-on-catalyst-9000.pdf",
+    "https://www.cisco.com/en/US/docs/switches/datacenter/sw/best_practices/cli_mgmt_guide/ip_mgmt.html"
+   ],
+   "lines": [
+    {
+     "t": "hostname {{HOSTNAME}}",
+     "v": 1
+    },
+    {
+     "t": "ip domain name {{DOMAIN}}",
+     "v": 1
+    },
+    {
+     "t": "username {{ADMIN_USER}} privilege 15 secret {{ADMIN_PW}}",
+     "v": 1
+    },
+    {
+     "t": "crypto key generate rsa modulus 2048",
+     "v": 1
+    },
+    {
+     "t": "ip ssh version 2",
+     "v": 1
+    },
+    {
+     "t": "line vty 0 15",
+     "v": 1
+    },
+    {
+     "t": " login local",
+     "v": 1
+    },
+    {
+     "t": " transport input ssh",
+     "v": 1
+    },
+    {
+     "t": "exit",
+     "v": 1
+    },
+    {
+     "t": "ntp server {{NTP1}}",
+     "v": 1
+    },
+    {
+     "t": "ntp server {{NTP2}}",
+     "v": 1
+    },
+    {
+     "t": "logging host {{SYSLOG1}}",
+     "v": 1
+    },
+    {
+     "t": "snmp-server group {{SNMP_GROUP}} v3 priv",
+     "v": 1
+    },
+    {
+     "t": "snmp-server user {{SNMP_USER}} {{SNMP_GROUP}} v3 auth sha {{SNMP_AUTH}} priv aes 128 {{SNMP_PRIV}}",
+     "v": 1
+    },
+    {
+     "t": "banner motd ^{{BANNER}}^",
+     "v": 1
+    }
+   ]
+  },
+  {
+   "id": "cisco-nxos",
+   "vendor": "Cisco",
+   "os": "NX-OS",
+   "title": "Cisco NX-OS 기본 보안·관리",
+   "comment": "!",
+   "sources": [
+    "https://www.cisco.com/en/US/docs/switches/datacenter/sw/best_practices/cli_mgmt_guide/ip_mgmt.html",
+    "https://www.cisco.com/c/en/us/support/docs/switches/catalyst-9500-series-switches/224891-configure-snmpv2c-v3-on-catalyst-9000.pdf"
+   ],
+   "lines": [
+    {
+     "t": "hostname {{HOSTNAME}}",
+     "v": 1
+    },
+    {
+     "t": "feature ssh",
+     "v": 1
+    },
+    {
+     "t": "username {{ADMIN_USER}} password {{ADMIN_PW}} role network-admin",
+     "v": 1
+    },
+    {
+     "t": "ntp server {{NTP1}} use-vrf management",
+     "v": 1
+    },
+    {
+     "t": "ntp server {{NTP2}} use-vrf management",
+     "v": 1
+    },
+    {
+     "t": "logging server {{SYSLOG1}} 6 use-vrf management",
+     "v": 1
+    },
+    {
+     "t": "snmp-server user {{SNMP_USER}} network-admin auth sha {{SNMP_AUTH}} priv aes-128 {{SNMP_PRIV}}",
+     "v": 1
+    },
+    {
+     "t": "banner motd #{{BANNER}}#",
+     "v": 1
+    }
+   ]
+  },
+  {
+   "id": "arista-eos",
+   "vendor": "Arista",
+   "os": "EOS",
+   "title": "Arista EOS 기본 보안·관리",
+   "comment": "!",
+   "sources": [
+    "https://www.arista.com/en/um-eos/eos-snmp"
+   ],
+   "lines": [
+    {
+     "t": "hostname {{HOSTNAME}}",
+     "v": 1
+    },
+    {
+     "t": "dns domain {{DOMAIN}}",
+     "v": 0
+    },
+    {
+     "t": "username {{ADMIN_USER}} privilege 15 role network-admin secret {{ADMIN_PW}}",
+     "v": 1
+    },
+    {
+     "t": "management ssh",
+     "v": 1
+    },
+    {
+     "t": "   no shutdown",
+     "v": 1
+    },
+    {
+     "t": "exit",
+     "v": 1
+    },
+    {
+     "t": "ntp server {{NTP1}}",
+     "v": 1
+    },
+    {
+     "t": "ntp server {{NTP2}}",
+     "v": 1
+    },
+    {
+     "t": "logging host {{SYSLOG1}}",
+     "v": 1
+    },
+    {
+     "t": "snmp-server group {{SNMP_GROUP}} v3 priv",
+     "v": 1
+    },
+    {
+     "t": "snmp-server user {{SNMP_USER}} {{SNMP_GROUP}} v3 auth sha {{SNMP_AUTH}} priv aes {{SNMP_PRIV}}",
+     "v": 1
+    },
+    {
+     "t": "banner motd",
+     "v": 1
+    },
+    {
+     "t": "{{BANNER}}",
+     "v": 1
+    },
+    {
+     "t": "EOF",
+     "v": 1
+    }
+   ]
+  },
+  {
+   "id": "juniper-junos",
+   "vendor": "Juniper",
+   "os": "Junos",
+   "title": "Juniper Junos 기본 보안·관리 (set 형식)",
+   "comment": "#",
+   "sources": [
+    "https://juniper.net/documentation/us/en/software/junos/network-mgmt/topics/topic-map/configure-snmpv3.html"
+   ],
+   "lines": [
+    {
+     "t": "set system host-name {{HOSTNAME}}",
+     "v": 1
+    },
+    {
+     "t": "set system domain-name {{DOMAIN}}",
+     "v": 1
+    },
+    {
+     "t": "set system login user {{ADMIN_USER}} class super-user authentication plain-text-password",
+     "v": 1
+    },
+    {
+     "t": "set system services ssh",
+     "v": 1
+    },
+    {
+     "t": "set system ntp server {{NTP1}}",
+     "v": 1
+    },
+    {
+     "t": "set system ntp server {{NTP2}}",
+     "v": 1
+    },
+    {
+     "t": "set system syslog host {{SYSLOG1}} any any",
+     "v": 1
+    },
+    {
+     "t": "set snmp v3 usm local-engine user {{SNMP_USER}} authentication-sha authentication-password {{SNMP_AUTH}}",
+     "v": 1
+    },
+    {
+     "t": "set snmp v3 usm local-engine user {{SNMP_USER}} privacy-aes128 privacy-password {{SNMP_PRIV}}",
+     "v": 1
+    },
+    {
+     "t": "set snmp v3 vacm security-to-group security-model usm security-name {{SNMP_USER}} group {{SNMP_GROUP}}",
+     "v": 1
+    },
+    {
+     "t": "set snmp v3 vacm access group {{SNMP_GROUP}} default-context-prefix security-model usm security-level privacy read-view all",
+     "v": 1
+    },
+    {
+     "t": "set snmp view all oid .1 include",
+     "v": 1
+    },
+    {
+     "t": "set system login message \"{{BANNER}}\"",
+     "v": 1
+    }
+   ]
+  },
+  {
+   "id": "huawei-vrp",
+   "vendor": "Huawei",
+   "os": "VRP",
+   "title": "Huawei VRP 기본 보안·관리",
+   "comment": "#",
+   "note": "SNMPv3 줄은 V600R024 문법(공식 문서). V200 장비는 매뉴얼 확인.",
+   "sources": [
+    "https://support.huawei.com/enterprise/en/doc/EDOC1100460424/d29954d9/configuring-basic-snmpv3-functions",
+    "https://napalm-logs.readthedocs.io/en/latest/device_config/huawei.html"
+   ],
+   "lines": [
+    {
+     "t": "sysname {{HOSTNAME}}",
+     "v": 1
+    },
+    {
+     "t": "aaa",
+     "v": 1
+    },
+    {
+     "t": " local-user {{ADMIN_USER}} password irreversible-cipher {{ADMIN_PW}}",
+     "v": 1
+    },
+    {
+     "t": " local-user {{ADMIN_USER}} privilege level 15",
+     "v": 1
+    },
+    {
+     "t": " local-user {{ADMIN_USER}} service-type ssh",
+     "v": 1
+    },
+    {
+     "t": " quit",
+     "v": 1
+    },
+    {
+     "t": "stelnet server enable",
+     "v": 1
+    },
+    {
+     "t": "ssh user {{ADMIN_USER}} authentication-type password",
+     "v": 1
+    },
+    {
+     "t": "ssh user {{ADMIN_USER}} service-type stelnet",
+     "v": 1
+    },
+    {
+     "t": "user-interface vty 0 4",
+     "v": 1
+    },
+    {
+     "t": " authentication-mode aaa",
+     "v": 1
+    },
+    {
+     "t": " protocol inbound ssh",
+     "v": 1
+    },
+    {
+     "t": " quit",
+     "v": 1
+    },
+    {
+     "t": "ntp-service unicast-server {{NTP1}}",
+     "v": 1
+    },
+    {
+     "t": "ntp-service unicast-server {{NTP2}}",
+     "v": 1
+    },
+    {
+     "t": "info-center loghost {{SYSLOG1}}",
+     "v": 1
+    },
+    {
+     "t": "snmp-agent sys-info version v3",
+     "v": 1
+    },
+    {
+     "t": "snmp-agent group v3 {{SNMP_GROUP}} privacy",
+     "v": 1
+    },
+    {
+     "t": "snmp-agent usm-user v3 {{SNMP_USER}} {{SNMP_GROUP}} authentication-mode sha2-256 {{SNMP_AUTH}} privacy-mode aes128 {{SNMP_PRIV}}",
+     "v": 1
+    },
+    {
+     "t": "header login information \"{{BANNER}}\"",
+     "v": 1
+    }
+   ]
+  },
+  {
+   "id": "extreme-exos",
+   "vendor": "Extreme",
+   "os": "EXOS",
+   "title": "Extreme EXOS 기본 보안·관리",
+   "comment": "#",
+   "sources": [
+    "https://community.extremenetworks.com/zxxfm75553/attachments/zxxfm75553/ExtremeSwitching_EXOS_Switch_Engine/19393/1/CLI_ExtremeXOS_Cheat_Sheet.pdf",
+    "https://documentation.extremenetworks.com/ExtremeXOS%20v33.6.1%20Command%20References/Switch_Operating_Systems/ExtremeXOS/Command_References/configure_ntp_serverpeer_add.shtml"
+   ],
+   "lines": [
+    {
+     "t": "configure snmp sysname {{HOSTNAME}}",
+     "v": 1
+    },
+    {
+     "t": "create account admin {{ADMIN_USER}}",
+     "v": 1
+    },
+    {
+     "t": "configure syslog add {{SYSLOG1}} vr VR-Default local6",
+     "v": 1
+    },
+    {
+     "t": "enable ssh2",
+     "v": 0
+    },
+    {
+     "t": "configure ntp server add {{NTP1}} vr VR-Mgmt",
+     "v": 0
+    },
+    {
+     "t": "enable ntp vlan Mgmt",
+     "v": 0
+    },
+    {
+     "t": "enable log target syslog {{SYSLOG1}} vr VR-Default local6",
+     "v": 0
+    },
+    {
+     "t": "configure snmpv3 add user {{SNMP_USER}} authentication sha {{SNMP_AUTH}} privacy aes {{SNMP_PRIV}}",
+     "v": 0
+    },
+    {
+     "t": "configure banner",
+     "v": 0
+    }
+   ]
+  },
+  {
+   "id": "extreme-voss",
+   "vendor": "Extreme",
+   "os": "VOSS",
+   "title": "Extreme VOSS 기본 보안·관리",
+   "comment": "#",
+   "sources": [
+    "https://documentation.extremenetworks.com/VOSS/SW/88/VOSSUserGuide/GUID-F8C555E8-434A-4A0D-A600-0BF8D0441FA7.shtml",
+    "https://documentation.extremenetworks.com/VOSS/SW/83/CLIRefVOSS/GUID-1641B2EC-647E-488C-9DA9-25B4E58804CD.shtml"
+   ],
+   "lines": [
+    {
+     "t": "snmp-server name {{HOSTNAME}}",
+     "v": 0
+    },
+    {
+     "t": "ssh",
+     "v": 0
+    },
+    {
+     "t": "ntp server {{NTP1}}",
+     "v": 0
+    },
+    {
+     "t": "ntp",
+     "v": 0
+    },
+    {
+     "t": "syslog host 1 address {{SYSLOG1}}",
+     "v": 0
+    },
+    {
+     "t": "syslog host 1 enable",
+     "v": 0
+    }
+   ]
+  },
+  {
+   "id": "ale-aos",
+   "vendor": "ALE",
+   "os": "AOS 8",
+   "title": "ALE OmniSwitch AOS 8 기본 관리",
+   "comment": "!",
+   "sources": [
+    "https://community.netwitness.com/ckkzj82364/attachments/ckkzj82364/netwitness-integrations/93/1/Alcatel_OmniSwitch.pdf"
+   ],
+   "lines": [
+    {
+     "t": "system name {{HOSTNAME}}",
+     "v": 0
+    },
+    {
+     "t": "aaa authentication ssh local",
+     "v": 0
+    },
+    {
+     "t": "ntp server {{NTP1}}",
+     "v": 0
+    },
+    {
+     "t": "ntp client enable",
+     "v": 0
+    },
+    {
+     "t": "swlog output socket {{SYSLOG1}}",
+     "v": 0
+    }
+   ]
+  },
+  {
+   "id": "nokia-sros",
+   "vendor": "Nokia",
+   "os": "SR OS (classic CLI)",
+   "title": "Nokia SR OS 기본 관리 (classic CLI)",
+   "comment": "#",
+   "sources": [
+    "https://documentation.nokia.com/sr/25-3/7750-sr/books/peering-quick-reference/additional-system-configuration.html"
+   ],
+   "lines": [
+    {
+     "t": "configure system name \"{{HOSTNAME}}\"",
+     "v": 0
+    },
+    {
+     "t": "configure system time ntp server {{NTP1}} router-instance \"Base\"",
+     "v": 1
+    },
+    {
+     "t": "configure log syslog \"syslog-1\" address {{SYSLOG1}}",
+     "v": 1
+    },
+    {
+     "t": "configure log log-id \"to-syslog\" destination syslog \"syslog-1\"",
+     "v": 1
+    }
+   ]
+  },
+  {
+   "id": "a10-acos",
+   "vendor": "A10",
+   "os": "ACOS",
+   "title": "A10 ACOS 기본 관리",
+   "comment": "!",
+   "sources": [
+    "https://cheatography.com/myasincavdar/cheat-sheets/a10-acos-system-configuration-and-administration",
+    "https://documentation.a10networks.com/ACOS/607x/ACOS_6.0.7-P2/pdf/System_Configuration_and_Administration.pdf"
+   ],
+   "lines": [
+    {
+     "t": "hostname {{HOSTNAME}}",
+     "v": 1
+    },
+    {
+     "t": "ntp server {{NTP1}}",
+     "v": 1
+    },
+    {
+     "t": "snmp-server group {{SNMP_GROUP}} v3 priv read {{SNMP_VIEW}}",
+     "v": 1
+    },
+    {
+     "t": "snmp-server SNMPv3 user {{SNMP_USER}} group {{SNMP_GROUP}} v3 auth sha {{SNMP_AUTH}} priv aes {{SNMP_PRIV}}",
+     "v": 0
+    },
+    {
+     "t": "logging host {{SYSLOG1}}",
+     "v": 0
+    },
+    {
+     "t": "banner login \"{{BANNER}}\"",
+     "v": 1
+    }
+   ]
+  }
+ ],
+ "ports": [
+  {
+   "line": "Cisco, C9200L-48T-4X, IOS-XE, 48x1G-UTP+4x10G-OPTIC",
+   "src": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9200-series-switches/nb-06-cat9200-ser-data-sheet-cte-en.html"
+  },
+  {
+   "line": "Huawei, S5735-L48T4X-A1, VRP, 48x1G-UTP+4x10G-OPTIC",
+   "src": "https://www.telecomate.com/s5735-l48t4x-a1"
+  },
+  {
+   "line": "Huawei, S6730-H48X6C, VRP, 48x10G-OPTIC+6x100G-OPTIC",
+   "src": "https://network-switch.com/de/products/network-switch-huawei-s6730-h-series-core-switch-h48x6c"
+  },
+  {
+   "line": "Juniper, EX2300-48T, Junos, 48x1G-UTP+4x10G-OPTIC",
+   "src": "https://juniper.net/us/en/products-services/switching/ex-series/datasheets/1000579.page"
+  },
+  {
+   "line": "Arista, 7280SR-48C6, EOS, 48x10G-OPTIC+6x100G-OPTIC",
+   "src": "https://www.arista.com/assets/data/pdf/Datasheets/7280R-DataSheet.pdf"
+  }
+ ]
+}
