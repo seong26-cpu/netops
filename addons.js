@@ -5,17 +5,25 @@
 (function () {
   'use strict';
   var MARK = /\s+! \[확인 필요\]$/;
+  // 적용용: [확인 필요] 줄은 표시만 지우지 않고 주석으로 바꿔 실행되지 않게 한다.
+  // 머리 줄(들여쓰기 0)이 미확인이면 그 아래 들여쓴 줄도 함께 주석 처리(엉뚱한 위치에서 실행 방지).
   window.__nxApply = function (vendor, text) {
     var lines = String(text || '').split('\n');
     var cm = (vendor === 'cisco' || vendor === 'arista' || vendor === 'a10') ? '!' : '#';
-    var need = 0; var out = [];
+    var need = 0; var out = []; var skipKids = false;
     for (var i = 0; i < lines.length; i++) {
       var l = lines[i];
-      if (MARK.test(l)) { l = l.replace(MARK, ''); if (!/^\s*[!#]?\s*$/.test(l)) need++; }
+      var indented = /^\s/.test(l);
+      if (!indented) skipKids = false;
+      if (MARK.test(l)) {
+        l = l.replace(MARK, '');
+        if (!/^\s*[!#]?\s*$/.test(l)) { need++; out.push(cm + ' [미확인-실행 안 함] ' + l.trim()); if (!indented) skipKids = true; continue; }
+      }
+      if (skipKids && indented && l.trim()) { out.push(cm + ' [미확인-실행 안 함]   ' + l.trim()); need++; continue; }
       if (/^!/.test(l)) { if (cm === '!') out.push(l); else if (l.replace(/^!\s*/, '')) out.push('#' + l.slice(1)); continue; }
       out.push(l);
     }
-    if (need) out.splice(1, 0, cm + ' 주의: 출처 확인 전 문법 ' + need + '줄 포함 — 검토용 파일에서 [확인 필요] 줄을 확인한 뒤 적용');
+    if (need) out.splice(1, 0, cm + ' 주의: 출처 확인 전 문법 ' + need + '줄은 주석(' + cm + ')으로 바꿔 실행되지 않게 했습니다 — 검토 후 직접 주석을 풀어 적용');
     return out.join('\n');
   };
 
@@ -43,8 +51,14 @@
       if (!t.trim() || /^\s*!/.test(t) || /^\s*(quit|exit|return|system-view|exit-address-family)\s*$/.test(t)) return;
       if (vendor === 'juniper') { blocks.push({ h: t.trim(), kids: [] }); cur = null; return; }
       var ind = t.match(/^\s*/)[0].length;
-      if (ind === 0) { cur = blocks.filter(function (b) { return b.h === t; })[0]; if (!cur) { cur = { h: t, kids: [] }; blocks.push(cur); } }
-      else if (cur) cur.kids.push({ t: t.trim(), ind: ind });
+      if (ind === 0) { cur = blocks.filter(function (b) { return b.h === t; })[0]; if (!cur) { cur = { h: t, kids: [] }; blocks.push(cur); } cur.stack = []; }
+      else if (cur) {
+        // 상위 문맥(예: ospf → area → network)을 경로로 보존
+        while (cur.stack.length && cur.stack[cur.stack.length - 1].ind >= ind) cur.stack.pop();
+        var path = cur.stack.map(function (x) { return x.t; }), pind = cur.stack.map(function (x) { return x.ind; });
+        cur.kids.push({ t: t.trim(), ind: ind, path: path, pind: pind });
+        cur.stack.push({ t: t.trim(), ind: ind });
+      }
       else blocks.push({ h: t.trim(), kids: [] });
     });
     return blocks;
@@ -54,8 +68,9 @@
     after.forEach(function (b) {
       var o = before.filter(function (x) { return x.h === b.h; })[0];
       if (!o) { out.push({ h: b.h, isNew: true, kids: b.kids }); return; }
-      var had = {}; o.kids.forEach(function (k) { had[k.t] = 1; });
-      var ks = b.kids.filter(function (k) { return !had[k.t]; });
+      var key = function (k) { return (k.path || []).join('\u0001') + '\u0001' + k.t; };
+      var had = {}; o.kids.forEach(function (k) { had[key(k)] = 1; });
+      var ks = b.kids.filter(function (k) { return !had[key(k)]; });
       if (ks.length) out.push({ h: b.h, isNew: false, kids: ks });
     });
     return out;
@@ -100,6 +115,14 @@
     if (/^mode lacp/.test(c)) return 'undo mode';
     return 'undo ' + c;
   }
+  // 문맥 안의 한 줄을 지우는 명령
+  function negCtx(c, hw, un) {
+    var m;
+    if (/^(no|undo) /.test(c)) return c.replace(/^(no|undo) /, '');
+    if (hw && (m = c.match(/^peer (\S+) as-number/))) return 'undo peer ' + m[1];
+    if (!hw && (m = c.match(/^neighbor (\S+) remote-as/))) return 'no neighbor ' + m[1];
+    return un + c;
+  }
   // changes: diffBlocks 결과(추가된 것) / readd: 지워진 것(되돌릴 때 다시 넣음)
   function rollbackLines(vendor, added, removed) {
     var out = []; var warn = [];
@@ -124,10 +147,19 @@
         if (ls.length) { out.push(h); ls.forEach(function (x) { out.push(x); }); out.push(close); }
         return;
       }
-      if (!b.isNew) { // 기존 블록 안에 줄만 추가됨 → 블록에 들어가 그 줄만 지움
+      if (!b.isNew) { // 기존 블록 안에 줄만 추가됨 → 상위 문맥(area·address-family 등)에 들어가 그 줄만 지움
+        var addedKey = {}; b.kids.forEach(function (k) { addedKey[(k.path || []).concat([k.t]).join('\u0001')] = 1; });
+        // 뿌리: 조상 중 새로 추가된 줄이 없는 줄 (새 문맥이면 문맥째 지움)
+        var roots = b.kids.filter(function (k) { var p = k.path || []; for (var i = 1; i <= p.length; i++) if (addedKey[p.slice(0, i).join('\u0001')]) return false; return true; });
         var l2 = [];
-        kids.forEach(function (c) { if (/^(quit|exit)/.test(c)) return; once(l2, ' ' + (/^(no|undo) /.test(c) ? c.replace(/^(no|undo) /, '') : un + c)); });
-        if (l2.length) { out.push(h); l2.forEach(function (x) { out.push(x); }); out.push(close); }
+        roots.slice().reverse().forEach(function (k) {
+          if (/^(quit|exit)/.test(k.t)) return;
+          var p = k.path || [], pi = k.pind || [];
+          p.forEach(function (x, i) { l2.push(' '.repeat(pi[i] || (i + 1)) + x); });
+          l2.push(' '.repeat(k.ind || 1) + negCtx(k.t, hw, un));
+          for (var i = p.length - 1; i >= 0; i--) l2.push(' '.repeat(pi[i] || (i + 1)) + (hw ? 'quit' : /^address-family/.test(p[i]) ? 'exit-address-family' : 'exit'));
+        });
+        if (l2.length) { var hh = h, mo; if (hw && (mo = h.match(/^ospf (\d+)/))) hh = 'ospf ' + mo[1]; /* 기존 프로세스는 번호로만 진입 */ out.push(hh); l2.forEach(function (x) { out.push(x); }); out.push(close); }
         return;
       }
       if (/^(hostname|sysname)\b/.test(h)) return;
@@ -143,7 +175,21 @@
       if (/^mlag/.test(h)) { out.push('no mlag configuration'); return; }
       out.push(/^no /.test(h) ? h.slice(3) : 'no ' + h);
     });
-    (removed || []).forEach(function (b) { out.push(b.h); b.kids.forEach(function (k) { out.push(' ' + k.t); }); if (b.kids.length) out.push(close); });
+    (removed || []).forEach(function (b) {
+      out.push(b.h);
+      var opened = [];
+      b.kids.forEach(function (k) {
+        var p = k.path || [], pi = k.pind || [];
+        // 필요한 상위 문맥만 다시 열기
+        var same = 0; while (same < opened.length && same < p.length && opened[same] === p[same]) same++;
+        for (var i = opened.length - 1; i >= same; i--) out.push(' '.repeat(i + 1) + (hw ? 'quit' : /^address-family/.test(opened[i]) ? 'exit-address-family' : 'exit'));
+        opened = opened.slice(0, same);
+        for (var j = same; j < p.length; j++) { out.push(' '.repeat(pi[j] || (j + 1)) + p[j]); opened.push(p[j]); }
+        out.push(' '.repeat(k.ind || 1) + k.t);
+      });
+      for (var i = opened.length - 1; i >= 0; i--) out.push(' '.repeat(i + 1) + (hw ? 'quit' : /^address-family/.test(opened[i]) ? 'exit-address-family' : 'exit'));
+      if (b.kids.length) out.push(close);
+    });
     return { lines: out, warn: warn };
   }
   function rollbackFor(node, topoAfter, topoBefore) {
@@ -338,7 +384,8 @@
       } else if (state.tab === 'ip') {
         var t = ipTable(topo);
         outText = toCsv(t.rows);
-        h += '<div class="notice small">연결별 IP·Loopback·가상 IP를 표로 모았습니다. CSV는 엑셀에서 바로 열립니다(한글 깨짐 방지 처리).</div>';
+        h += '<div class="notice small">연결별 IP·Loopback·가상 IP를 표로 모았습니다. CSV는 엑셀에서 바로 열립니다(한글 깨짐 방지 처리).<br><b>자동 배정 주소는 연결·장비별로 고정</b>됩니다. 앞쪽 연결을 지우거나 새로 추가해도 기존 주소는 바뀌지 않고, 직접 입력한 주소·Loopback은 자동 배정에서 제외됩니다.</div>';
+        h += '<div class="row">' + (state.ipcf ? '<span class="small">자동 배정된 모든 주소를 처음부터 다시 정할까요? (직접 입력한 주소는 그대로)</span><button class="btn sm danger" data-nx="ipreset2">전체 재배정</button><button class="btn sm quiet" data-nx="ipno">취소</button>' : '<button class="btn sm quiet" data-nx="ipreset">IP 전체 재배정…</button><span class="small muted">빈 번호를 앞에서부터 다시 채웁니다. 구성도에서 Ctrl+Z로 취소할 수 있습니다.</span>') + '</div>';
         if (t.errors.length) h += '<div class="notice small" style="border-left-color:var(--bad)">' + t.errors.map(esc).join('<br>') + '</div>';
         h += '<div class="tw" style="max-height:48vh;overflow:auto"><table><thead><tr>' + t.rows[0].map(function (c2) { return '<th>' + esc(c2) + '</th>'; }).join('') + '</tr></thead><tbody>' + t.rows.slice(1).map(function (r) { return '<tr>' + r.map(function (c2, i) { return '<td class="' + (i === 0 ? 'small' : 'mono small') + '">' + esc(c2) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
       } else if (state.tab === 'check') {
@@ -384,6 +431,9 @@
       else if (k === 'restore2' && rec) { var c = CTX(); if (!c.updateTopo) { toast('되돌리기를 쓸 수 없습니다'); return; } var snap = slim(rec.after); c.updateTopo(topo.id, function (cur) { snap.id = cur.id; return snap; }); state.confirm = null; toast('그 시점으로 되돌렸습니다 — 구성도에서 Ctrl+Z로 취소할 수 있습니다'); setTimeout(render, 300); }
       else if (k === 'rb' && rec) { state.tab = 'rollback'; state.basis = String(rec.id); state.node = ''; render(); }
       else if (k === 'hdel') { hDel(id).then(loadHist).then(render); }
+      else if (k === 'ipreset') { state.ipcf = true; render(); }
+      else if (k === 'ipno') { state.ipcf = false; render(); }
+      else if (k === 'ipreset2') { state.ipcf = false; if (window.netopsIpReset && window.netopsIpReset()) toast('자동 배정 주소를 다시 정했습니다'); else toast('재배정할 수 없습니다'); setTimeout(render, 900); }
     });
     document.addEventListener('keydown', onKey);
     document.body.appendChild(ov);
@@ -391,6 +441,54 @@
     loadHist().then(render);
     ov.querySelector('.modal').focus();
   }
+  // ---------- IP 배정 고정 (연결 ID·장비 ID별 저장) ----------
+  function ipMem(t) {
+    var F = window.__nxFn; if (!F || !F.alloc) return null;
+    var a = F.alloc(t), mem = { links: {}, loops: {} };
+    Object.keys(a.links || {}).forEach(function (id) { var x = a.links[id]; if (!x.manual && x.net) mem.links[id] = { net: x.net, prefix: x.prefix, plan: x.plan }; });
+    var man = {}; (t.nodes || []).forEach(function (n) { if (n.loopback) man[n.id] = 1; });
+    Object.keys(a.loops || {}).forEach(function (id) { if (!man[id] && a.loops[id]) mem.loops[id] = a.loops[id]; });
+    return mem;
+  }
+  var lastRaw = null;
+  function ipWatch() {
+    try {
+      var c = CTX(), t = c.raw; if (!t || !c.updateTopo || t === lastRaw) return; lastRaw = t;
+      var mem = ipMem(t); if (!mem) return;
+      if (JSON.stringify(mem) === JSON.stringify(t.ipAlloc || { links: {}, loops: {} })) return;
+      c.updateTopo(t.id, function (x) { x.ipAlloc = mem; return x; }, { skipHistory: true });
+    } catch (e) { }
+  }
+  setInterval(ipWatch, 700);
+  window.netopsIpReset = function () {
+    var c = CTX(), t = c.raw; if (!t || !c.updateTopo) return false;
+    var x0 = structuredClone(t); delete x0.ipAlloc; var mem = ipMem(x0) || { links: {}, loops: {} };
+    c.updateTopo(t.id, function (x) { x.ipAlloc = mem; return x; });
+    return true;
+  };
+  // ---------- 전체 백업 보강: 형식 버전 · 내 자료(모델·틀·카드) · 변경 이력 · 업로드 원본 ----------
+  function hAll() { return hdb().then(function (db) { return new Promise(function (res) { var q = db.transaction('snaps').objectStore('snaps').getAll(); q.onsuccess = function () { res(q.result || []); }; q.onerror = function () { res([]); }; }); }).catch(function () { return []; }); }
+  function hPutAll(list) { return hdb().then(function (db) { return new Promise(function (res) { var tx = db.transaction('snaps', 'readwrite'), st = tx.objectStore('snaps'); list.forEach(function (r) { try { st.put(r); } catch (e) { } }); tx.oncomplete = res; tx.onerror = res; }); }).catch(function () { }); }
+  window.__nxBackupExtra = function (z) {
+    var my = window.__nxMyRaw ? window.__nxMyRaw.read().catch(function () { return null; }) : Promise.resolve(null);
+    var raw = window.__nxRawAll ? window.__nxRawAll() : Promise.resolve([]);
+    return Promise.all([my, hAll(), raw]).then(function (r) {
+      z.format = { name: 'netops-backup', version: 5, app: '7.1', note: '구성도·설정(인벤토리·모델 목록 포함)·작업 + 내 자료(모델·틀·카드)·변경 이력·업로드 원본(비밀 줄 삭제본)' };
+      z.extra = { myPack: r[0] ? { models: r[0].modelsText, templates: r[0].templates, cards: r[0].cardsText } : null, history: r[1], rawConfigs: r[2] };
+      z.counts = { topos: Object.keys(z.topos || {}).length, jobs: (z.jobs || []).length, history: r[1].length, rawConfigs: r[2].length, myTemplates: r[0] ? (r[0].templates || []).length : 0 };
+      return z;
+    });
+  };
+  window.__nxRestoreExtra = function (b) {
+    var x = b && b.extra; if (!x) return Promise.resolve(null);
+    var jobs = [];
+    if (x.myPack && window.__nxMyRaw) jobs.push(window.__nxMyRaw.write({ modelsText: x.myPack.models || '', templates: x.myPack.templates || [], cardsText: x.myPack.cards == null ? null : x.myPack.cards }).then(function () { if (window.__nxSyncCatalog) window.__nxSyncCatalog(false); }).catch(function () { }));
+    if (x.history && x.history.length) jobs.push(hPutAll(x.history));
+    if (x.rawConfigs && x.rawConfigs.length && window.__nxRawPut) x.rawConfigs.forEach(function (r) { jobs.push(window.__nxRawPut(r)); });
+    return Promise.all(jobs).then(function () { return x; });
+  };
+  // 저장 실패로 보관 중인 변경이 있으면 창 닫기 전에 경고
+  window.addEventListener('beforeunload', function (e) { var q = window.__nxSaveQ; if (q && q.list().some(function (i) { return i.state === 'failed'; })) { e.preventDefault(); e.returnValue = ''; } });
   window.__nxTools = { open: open, _t: { toBlocks: toBlocks, diffBlocks: diffBlocks, rollbackLines: rollbackLines, toCsv: toCsv } };
 
   // 왼쪽 메뉴 '운용 작업' 아래 '운용 도구 5종'
