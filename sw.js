@@ -1,6 +1,6 @@
 // 오프라인 실행용 서비스 워커: 설치 때 앱 기본 파일을 받아 두고, 네트워크가 없으면 캐시로 응답
 const CACHE = 'netops-pub-v1';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './addons.js', './pwa-install.js', './ui-fix.js', './storage.js', './packs/standard-pack.json', './icons/icon-192.png'];
+const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './addons.js', './pwa-install.js', './ui-fix.js', './storage.js', './hw.js', './upload.js', './enrich.js', './packs/standard-pack.json', './icons/icon-192.png'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then(async (c) => {
     await Promise.all(SHELL.map((u) => c.add(u).catch(() => {})));

@@ -1,6 +1,6 @@
 {
  "app": "netops-standard-pack",
- "version": "2026.11.1",
+ "version": "2026.11.5",
  "updated": "2026-11-10",
  "rule": "v=1: 공식/공개 자료로 문법 확인된 줄, v=0: [확인 필요] — 주석 처리되어 나오며 장비 매뉴얼로 확인 후 사용",
  "vars": [
@@ -604,24 +604,537 @@
  ],
  "ports": [
   {
-   "line": "Cisco, C9200L-48T-4X, IOS-XE, 48x1G-UTP+4x10G-OPTIC",
-   "src": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9200-series-switches/nb-06-cat9200-ser-data-sheet-cte-en.html"
+   "vendor": "Cisco",
+   "model": "C9200L-24T-4X",
+   "os": "IOS-XE",
+   "ports": "24x1G-UTP+4x10G-OPTIC",
+   "src": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9200-series-switches/nb-06-cat9200-ser-data-sheet-cte-en.html",
+   "note": "",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "GigabitEthernet1/0/x · 업링크 TenGigabitEthernet1/1/x (스택 멤버 번호가 맨 앞)",
+   "nameSrc": "https://community.cisco.com/t5/switching/interface-numbers-for-c9200-48p-with-uplink-module-c9200-nm-4x/m-p/4748840/highlight/true"
   },
   {
-   "line": "Huawei, S5735-L48T4X-A1, VRP, 48x1G-UTP+4x10G-OPTIC",
-   "src": "https://www.telecomate.com/s5735-l48t4x-a1"
+   "vendor": "Cisco",
+   "model": "C9200L-48T-4X",
+   "os": "IOS-XE",
+   "ports": "48x1G-UTP+4x10G-OPTIC",
+   "src": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9200-series-switches/nb-06-cat9200-ser-data-sheet-cte-en.html",
+   "note": "",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "GigabitEthernet1/0/x · 업링크 TenGigabitEthernet1/1/x (스택 멤버 번호가 맨 앞)",
+   "nameSrc": "https://community.cisco.com/t5/switching/interface-numbers-for-c9200-48p-with-uplink-module-c9200-nm-4x/m-p/4748840/highlight/true"
   },
   {
-   "line": "Huawei, S6730-H48X6C, VRP, 48x10G-OPTIC+6x100G-OPTIC",
-   "src": "https://network-switch.com/de/products/network-switch-huawei-s6730-h-series-core-switch-h48x6c"
+   "vendor": "Cisco",
+   "model": "C9200L-24T-4G",
+   "os": "IOS-XE",
+   "ports": "24x1G-UTP+4x1G-OPTIC",
+   "src": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9200-series-switches/nb-06-cat9200-ser-data-sheet-cte-en.html",
+   "note": "",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "GigabitEthernet1/0/x · 업링크 TenGigabitEthernet1/1/x (스택 멤버 번호가 맨 앞)",
+   "nameSrc": "https://community.cisco.com/t5/switching/interface-numbers-for-c9200-48p-with-uplink-module-c9200-nm-4x/m-p/4748840/highlight/true"
   },
   {
-   "line": "Juniper, EX2300-48T, Junos, 48x1G-UTP+4x10G-OPTIC",
-   "src": "https://juniper.net/us/en/products-services/switching/ex-series/datasheets/1000579.page"
+   "vendor": "Cisco",
+   "model": "C9200L-48T-4G",
+   "os": "IOS-XE",
+   "ports": "48x1G-UTP+4x1G-OPTIC",
+   "src": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9200-series-switches/nb-06-cat9200-ser-data-sheet-cte-en.html",
+   "note": "",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "GigabitEthernet1/0/x · 업링크 TenGigabitEthernet1/1/x (스택 멤버 번호가 맨 앞)",
+   "nameSrc": "https://community.cisco.com/t5/switching/interface-numbers-for-c9200-48p-with-uplink-module-c9200-nm-4x/m-p/4748840/highlight/true"
   },
   {
-   "line": "Arista, 7280SR-48C6, EOS, 48x10G-OPTIC+6x100G-OPTIC",
-   "src": "https://www.arista.com/assets/data/pdf/Datasheets/7280R-DataSheet.pdf"
+   "vendor": "Cisco",
+   "model": "C9200-48T",
+   "os": "IOS-XE",
+   "ports": "48x1G-UTP",
+   "src": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9200-series-switches/nb-06-cat9200-ser-data-sheet-cte-en.html",
+   "note": "업링크는 네트워크 모듈 — 장비 구성 입력에서 C9200-NM-4G/4X 카드 선택",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "GigabitEthernet1/0/x · 업링크 TenGigabitEthernet1/1/x (스택 멤버 번호가 맨 앞)",
+   "nameSrc": "https://community.cisco.com/t5/switching/interface-numbers-for-c9200-48p-with-uplink-module-c9200-nm-4x/m-p/4748840/highlight/true"
+  },
+  {
+   "vendor": "Huawei",
+   "model": "S5735-L24T4X-A",
+   "os": "VRP",
+   "ports": "24x1G-UTP+4x10G-OPTIC",
+   "src": "https://support.huawei.com/enterprise/en/doc/EDOC1000013597/415a85bc/s5735-l24t4x-a",
+   "note": "",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "GigabitEthernet0/0/x · XGigabitEthernet0/0/x · 100GE0/0/x — 공식 하드웨어 문서에 이름 표기 없음, 확인 필요",
+   "nameSrc": ""
+  },
+  {
+   "vendor": "Huawei",
+   "model": "S5735-L48T4X-A1",
+   "os": "VRP",
+   "ports": "48x1G-UTP+4x10G-OPTIC",
+   "src": "https://www.telecomate.com/s5735-l48t4x-a1",
+   "note": "",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "GigabitEthernet0/0/x · XGigabitEthernet0/0/x · 100GE0/0/x — 공식 하드웨어 문서에 이름 표기 없음, 확인 필요",
+   "nameSrc": ""
+  },
+  {
+   "vendor": "Huawei",
+   "model": "S6730-H48X6C",
+   "os": "VRP",
+   "ports": "48x10G-OPTIC+6x100G-OPTIC",
+   "src": "https://network-switch.com/de/products/network-switch-huawei-s6730-h-series-core-switch-h48x6c",
+   "note": "",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "GigabitEthernet0/0/x · XGigabitEthernet0/0/x · 100GE0/0/x — 공식 하드웨어 문서에 이름 표기 없음, 확인 필요",
+   "nameSrc": ""
+  },
+  {
+   "vendor": "Juniper",
+   "model": "EX2300-24T",
+   "os": "Junos",
+   "ports": "24x1G-UTP+4x10G-OPTIC",
+   "src": "https://www.juniper.net/documentation/us/en/hardware/ex2300/topics/topic-map/ex2300-system-overview.html",
+   "note": "",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "ge-0/0/0~ · 업링크 xe-0/1/0~3",
+   "nameSrc": "https://manualslib.com/manual/2878126/Juniper-Ex2300-Series.html?page=165"
+  },
+  {
+   "vendor": "Juniper",
+   "model": "EX2300-48T",
+   "os": "Junos",
+   "ports": "48x1G-UTP+4x10G-OPTIC",
+   "src": "https://www.juniper.net/documentation/us/en/hardware/ex2300/topics/topic-map/ex2300-system-overview.html",
+   "note": "",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "ge-0/0/0~ · 업링크 xe-0/1/0~3",
+   "nameSrc": "https://manualslib.com/manual/2878126/Juniper-Ex2300-Series.html?page=165"
+  },
+  {
+   "vendor": "Arista",
+   "model": "7050SX3-48C8",
+   "os": "EOS",
+   "ports": "48x10G-OPTIC+8x100G-OPTIC",
+   "src": "https://www.arista.com/en/products/7050x3-series/specifications",
+   "note": "",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "Ethernet1~48 · 100G는 Ethernet49/1 (레인 번호)",
+   "nameSrc": "https://www.arista.com/jp/um-eos/eos-ethernet-ports?searchword=eos+lldp"
+  },
+  {
+   "vendor": "Arista",
+   "model": "7280SR-48C6",
+   "os": "EOS",
+   "ports": "48x10G-OPTIC+6x100G-OPTIC",
+   "src": "https://www.arista.com/assets/data/pdf/Datasheets/7280R-DataSheet.pdf",
+   "note": "",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "Ethernet1~48 · 100G는 Ethernet49/1 (레인 번호)",
+   "nameSrc": "https://www.arista.com/jp/um-eos/eos-ethernet-ports?searchword=eos+lldp"
+  },
+  {
+   "vendor": "Extreme",
+   "model": "X460-G2-48p-10GE4",
+   "os": "EXOS",
+   "ports": "48x1G-UTP+4x10G-OPTIC",
+   "src": "https://documentation.extremenetworks.com/summit/GUID-3BFF8039-D60F-4451-A199-D99B22DA0E7E.shtml",
+   "note": "",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "단독 장비 1~N, 스택 slot:port — 공식 문서 본문 미확보로 확인 필요",
+   "nameSrc": ""
+  },
+  {
+   "vendor": "Extreme",
+   "model": "X670-G2-72x",
+   "os": "EXOS",
+   "ports": "72x10G-OPTIC",
+   "src": "https://nstelecomm.novec.com/NST_Home/upload/x670-g2-data-sheet.pdf",
+   "note": "",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "단독 장비 1~N, 스택 slot:port — 공식 문서 본문 미확보로 확인 필요",
+   "nameSrc": ""
+  },
+  {
+   "vendor": "Extreme",
+   "model": "VSP4850GTS",
+   "os": "VOSS",
+   "ports": "48x1G-UTP+2x10G-OPTIC",
+   "src": "https://www.servers-net.ru/upload/uf/128/vsp_4000_series_data_sheet.pdf",
+   "note": "1G SFP 콤보 2포트는 제외",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "unit/port 형식(1/1)은 확인 · 업링크 번호(1/49~ 또는 1/51~)는 확인 필요",
+   "nameSrc": "https://documentation.extremenetworks.com/VOSS/SW/MigrateERSToUniversalVOSS/GUID-2BBD4991-4B88-418B-AD67-45AAED1957B9.shtml"
+  },
+  {
+   "vendor": "Extreme",
+   "model": "VSP4450GTX-HT-PWR+",
+   "os": "VOSS",
+   "ports": "48x1G-UTP+2x10G-OPTIC",
+   "src": "https://www.servers-net.ru/upload/uf/128/vsp_4000_series_data_sheet.pdf",
+   "note": "1G SFP 콤보 2포트는 제외",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "unit/port 형식(1/1)은 확인 · 업링크 번호(1/49~ 또는 1/51~)는 확인 필요",
+   "nameSrc": "https://documentation.extremenetworks.com/VOSS/SW/MigrateERSToUniversalVOSS/GUID-2BBD4991-4B88-418B-AD67-45AAED1957B9.shtml"
+  },
+  {
+   "vendor": "Extreme",
+   "model": "VSP4900-48P",
+   "os": "VOSS",
+   "ports": "48x1G-UTP",
+   "src": "https://documentation.extremenetworks.com/VSP%204900%20Series%20Installation%20Guide/Wired_Hardware/VSP_4900_Installation_Guide/topics/vsp4900-48p_switch_features.shtml",
+   "note": "VIM 슬롯 포트는 장착 모듈에 따라 별도 추가",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "unit/port 형식(1/1)은 확인 · 업링크 번호(1/49~ 또는 1/51~)는 확인 필요",
+   "nameSrc": "https://documentation.extremenetworks.com/VOSS/SW/MigrateERSToUniversalVOSS/GUID-2BBD4991-4B88-418B-AD67-45AAED1957B9.shtml"
+  },
+  {
+   "vendor": "ALE",
+   "model": "OS6560-24X4",
+   "os": "AOS 8",
+   "ports": "24x1G-UTP+2x1G-OPTIC+4x10G-OPTIC",
+   "src": "https://web-assets.al-enterprise.com/-/media/assets/internet/documents/omniswitch-6560-6560e-datasheet-fr.pdf",
+   "note": "",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "chassis/slot/port(1/1/N) — 업링크 번호는 확인 필요",
+   "nameSrc": ""
+  },
+  {
+   "vendor": "ALE",
+   "model": "OS6560-48X4",
+   "os": "AOS 8",
+   "ports": "48x1G-UTP+2x1G-OPTIC+4x10G-OPTIC",
+   "src": "https://web-assets.al-enterprise.com/-/media/assets/internet/documents/omniswitch-6560-6560e-datasheet-fr.pdf",
+   "note": "",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "chassis/slot/port(1/1/N) — 업링크 번호는 확인 필요",
+   "nameSrc": ""
+  },
+  {
+   "vendor": "ALE",
+   "model": "OS6860-24",
+   "os": "AOS 8",
+   "ports": "24x1G-UTP+4x10G-OPTIC",
+   "src": "https://toko.nale.co.id/wp-content/uploads/2022/07/omniswitch_6860_datasheet.pdf",
+   "note": "20G VFL(스태킹) 2포트는 제외",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "chassis/slot/port(1/1/N) — 업링크 번호는 확인 필요",
+   "nameSrc": ""
+  },
+  {
+   "vendor": "ALE",
+   "model": "OS6860-48",
+   "os": "AOS 8",
+   "ports": "48x1G-UTP+4x10G-OPTIC",
+   "src": "https://toko.nale.co.id/wp-content/uploads/2022/07/omniswitch_6860_datasheet.pdf",
+   "note": "20G VFL(스태킹) 2포트는 제외",
+   "chk": 1,
+   "nameChk": 0,
+   "nameRule": "chassis/slot/port(1/1/N) — 업링크 번호는 확인 필요",
+   "nameSrc": ""
+  },
+  {
+   "vendor": "Nokia",
+   "model": "7220 IXR-D3",
+   "os": "SR Linux",
+   "ports": "32x100G-OPTIC@ethernet-1/1+2x10G-OPTIC@ethernet-1/33",
+   "src": "https://documentation.nokia.com/srlinux/24-7/books/product-overview/hardware-overview.html",
+   "note": "SR Linux 포트 이름 ethernet-1/N",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "ethernet-1/N",
+   "nameSrc": "https://documentation.nokia.com/srlinux/25-7/books/product-overview/sr-linux-interfaces.html"
+  },
+  {
+   "vendor": "Nokia",
+   "model": "7220 IXR-H2",
+   "os": "SR Linux",
+   "ports": "128x100G-OPTIC@ethernet-1/1",
+   "src": "https://documentation.nokia.com/srlinux/24-7/books/product-overview/hardware-overview.html",
+   "note": "SR Linux 포트 이름 ethernet-1/N",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "ethernet-1/N",
+   "nameSrc": "https://documentation.nokia.com/srlinux/25-7/books/product-overview/sr-linux-interfaces.html"
+  },
+  {
+   "vendor": "Nokia",
+   "model": "7220 IXR-D1",
+   "os": "SR Linux",
+   "ports": "48x1G-UTP@ethernet-1/1+4x10G-OPTIC@ethernet-1/49",
+   "src": "https://documentation.nokia.com/srlinux/24-7/books/product-overview/hardware-overview.html",
+   "note": "자료에 '48T 4SFP+'로만 표기 — 48T가 1G 구리인지 확인 필요",
+   "chk": 0,
+   "nameChk": 1,
+   "nameRule": "ethernet-1/N",
+   "nameSrc": "https://documentation.nokia.com/srlinux/25-7/books/product-overview/sr-linux-interfaces.html"
+  },
+  {
+   "vendor": "A10",
+   "model": "Thunder 3350S",
+   "os": "ACOS",
+   "ports": "6x1G-UTP+2x1G-OPTIC+12x10G-OPTIC",
+   "src": "https://www.a10networks.com/resources/tech-specs/thunder-adc-appliance-model-comparisons/ , https://www.a10networks.com/wp-content/uploads/A10-DS-Thunder-ADC-Specifications.pdf",
+   "note": "10G 12포트 중 4포트는 10G 전용",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "interface ethernet N",
+   "nameSrc": "https://documentation.a10networks.com/ACOS/609x/ACOS_6.0.9/pdf/Network_Configuration.pdf"
+  },
+  {
+   "vendor": "A10",
+   "model": "Thunder 1060S",
+   "os": "ACOS",
+   "ports": "7x1G-UTP+4x10G-OPTIC",
+   "src": "https://www.a10networks.com/resources/tech-specs/thunder-adc-appliance-model-comparisons/ , https://www.a10networks.com/wp-content/uploads/A10-DS-Thunder-ADC-Specifications.pdf",
+   "note": "25G SFP28 2포트는 제외 (앱 속도 1G·10G·100G만 지원)",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "interface ethernet N",
+   "nameSrc": "https://documentation.a10networks.com/ACOS/609x/ACOS_6.0.9/pdf/Network_Configuration.pdf"
+  },
+  {
+   "vendor": "A10",
+   "model": "Thunder 4440",
+   "os": "ACOS",
+   "ports": "24x10G-OPTIC",
+   "src": "https://www.a10networks.com/resources/tech-specs/thunder-adc-appliance-model-comparisons/",
+   "note": "40G QSFP+ 4포트는 제외 (앱 속도 1G·10G·100G만 지원)",
+   "chk": 1,
+   "nameChk": 1,
+   "nameRule": "interface ethernet N",
+   "nameSrc": "https://documentation.a10networks.com/ACOS/609x/ACOS_6.0.9/pdf/Network_Configuration.pdf"
+  }
+ ],
+ "portRule": "포트구성은 앱이 지원하는 1G(UTP·OPTIC)·10G·100G(OPTIC)만 표기. 25G·40G 등은 note에 '제외'로 적음. chk=0은 [확인 필요]. 포트 이름을 직접 정할 때는 그룹 뒤에 @시작이름 (예: 4x10G-OPTIC@xe-0/1/0, 6x100G-OPTIC@Ethernet{49}/1 — { }안 숫자부터 1씩 증가).",
+ "cards": [
+  {
+   "vendor": "Cisco",
+   "card": "C9200-NM-4G",
+   "ports": "4x1G-OPTIC@GigabitEthernet$S/1/1",
+   "src": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9200-series-switches/nb-06-cat9200-ser-data-sheet-cte-en.html , https://community.cisco.com/t5/switching/interface-numbers-for-c9200-48p-with-uplink-module-c9200-nm-4x/m-p/4748840/highlight/true",
+   "note": "$S = 스택 멤버 번호(단독 장비 1)"
+  },
+  {
+   "vendor": "Cisco",
+   "card": "C9200-NM-4X",
+   "ports": "4x10G-OPTIC@TenGigabitEthernet$S/1/1",
+   "src": "https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9200-series-switches/nb-06-cat9200-ser-data-sheet-cte-en.html , https://community.cisco.com/t5/switching/interface-numbers-for-c9200-48p-with-uplink-module-c9200-nm-4x/m-p/4748840/highlight/true",
+   "note": "1G SFP를 꽂으면 GigabitEthernet$S/1/x로 보임"
+  }
+ ],
+ "rules": [
+  {
+   "id": "xr",
+   "vendor": "Cisco",
+   "label": "IOS XR (ASR9000·NCS) 랙0/슬롯/모듈/포트",
+   "tpl": {
+    "1G": "GigabitEthernet0/$S/$M/{0}",
+    "10G": "TenGigE0/$S/$M/{0}",
+    "100G": "HundredGigE0/$S/$M/{0}"
+   },
+   "chk": 1,
+   "src": "https://community.cisco.com/t5/xr-os-and-platforms/asr9006-interface-numbering/m-p/2077560 , https://community.cisco.com/t5/network-management/ios-xr-interface-module-notations/td-p/4099406",
+   "note": "포트·슬롯 0부터. 모듈(서브슬롯)은 카드에 따라 0·1…",
+   "mdef": "0"
+  },
+  {
+   "id": "ios-chassis",
+   "vendor": "Cisco",
+   "label": "IOS 섀시 (Catalyst 6500·7600·4500) 슬롯/포트",
+   "tpl": {
+    "1G": "GigabitEthernet$S/{1}",
+    "10G": "TenGigabitEthernet$S/{1}"
+   },
+   "chk": 0,
+   "src": "",
+   "note": "포트 1부터 — 공식 문서 본문 미확보",
+   "mdef": "0"
+  },
+  {
+   "id": "ios-stack",
+   "vendor": "Cisco",
+   "label": "IOS 스택형 (3750·3850·9200) 멤버/0/포트, 업링크 멤버/1/포트",
+   "tpl": {
+    "1G": "GigabitEthernet$S/$M/{1}",
+    "10G": "TenGigabitEthernet$S/$M/{1}"
+   },
+   "chk": 1,
+   "src": "https://www.layer23-switch.com/blog/cisco-switch-port-numbering.html",
+   "note": "고정 포트는 모듈 0, 업링크 모듈은 1",
+   "mdef": "0"
+  },
+  {
+   "id": "ios-rtr",
+   "vendor": "Cisco",
+   "label": "IOS 라우터 (1900·2900·2800·3800) 슬롯/포트",
+   "tpl": {
+    "1G": "GigabitEthernet$S/{0}"
+   },
+   "chk": 0,
+   "src": "https://www.layer23-switch.com/blog/cisco-switch-port-numbering.html",
+   "note": "라우터 포트는 0부터 (일반 해설). 2811 온보드 FastEthernet은 앱 속도에 없음",
+   "mdef": "0"
+  },
+  {
+   "id": "iosxe-rtr",
+   "vendor": "Cisco",
+   "label": "IOS XE 라우터 (ISR4000·ASR1000) 0/서브슬롯/포트",
+   "tpl": {
+    "1G": "GigabitEthernet0/$M/{0}",
+    "10G": "TenGigabitEthernet0/$M/{0}"
+   },
+   "chk": 0,
+   "src": "",
+   "note": "확인 필요",
+   "mdef": "0"
+  },
+  {
+   "id": "nxos",
+   "vendor": "Cisco",
+   "label": "NX-OS (Nexus) Ethernet슬롯/포트",
+   "tpl": {
+    "1G": "Ethernet$S/{1}",
+    "10G": "Ethernet$S/{1}",
+    "100G": "Ethernet$S/{1}"
+   },
+   "chk": 1,
+   "src": "https://www.layer23-switch.com/blog/cisco-switch-port-numbering.html",
+   "note": "브레이크아웃은 Ethernet1/2/1",
+   "mdef": "0"
+  },
+  {
+   "id": "junos",
+   "vendor": "Juniper",
+   "label": "Junos (MX·EX·SRX) 종류-FPC/PIC/포트",
+   "tpl": {
+    "1G": "ge-$S/$M/{0}",
+    "10G": "xe-$S/$M/{0}",
+    "100G": "et-$S/$M/{0}"
+   },
+   "chk": 1,
+   "src": "https://juniper.net/documentation/en_US/junos13.2/topics/concept/interfaces-naming-conventions.html",
+   "note": "FPC=슬롯, PIC=모듈, 모두 0부터",
+   "mdef": "0"
+  },
+  {
+   "id": "vrp8",
+   "vendor": "Huawei",
+   "label": "VRP8 라우터 (NE40E·NE9000·NE8000·ATN) 슬롯/카드/포트",
+   "tpl": {
+    "1G": "GigabitEthernet$S/$M/{0}",
+    "10G": "XGigabitEthernet$S/$M/{0}",
+    "100G": "100GE$S/$M/{0}"
+   },
+   "chk": 1,
+   "src": "https://support.huawei.com/enterprise/en/doc/EDOC1100335691/40b0decd/interface-management-configuration",
+   "note": "문서 예시 GigabitEthernet0/1/0 · XGigabitEthernet0/1/0 · 100GE0/1/0",
+   "mdef": "0"
+  },
+  {
+   "id": "ce",
+   "vendor": "Huawei",
+   "label": "CloudEngine (CE6800·8800·12800) 슬롯/카드/포트",
+   "tpl": {
+    "1G": "GE$S/$M/{1}",
+    "10G": "10GE$S/$M/{1}",
+    "100G": "100GE$S/$M/{1}"
+   },
+   "chk": 0,
+   "src": "https://support.huawei.com/enterprise/en/doc/EDOC1100369504/23f72483/ce6885-48ys8cq",
+   "note": "포트 1부터는 문서 확인, 이름(10GE 등)은 확인 필요",
+   "mdef": "0"
+  },
+  {
+   "id": "vrp5",
+   "vendor": "Huawei",
+   "label": "VRP5 S시리즈 (S5300·S5320) 0/0/포트",
+   "tpl": {
+    "1G": "GigabitEthernet$S/$M/{1}",
+    "10G": "XGigabitEthernet$S/$M/{1}"
+   },
+   "chk": 0,
+   "src": "",
+   "note": "슬롯·카드 보통 0/0 — 확인 필요",
+   "mdef": "0"
+  },
+  {
+   "id": "sros",
+   "vendor": "Nokia",
+   "label": "SR OS 슬롯/MDA/포트 (7750·7250)",
+   "tpl": {
+    "1G": "$S/$M/{1}",
+    "10G": "$S/$M/{1}",
+    "100G": "$S/$M/{1}"
+   },
+   "chk": 1,
+   "src": "https://documentation.nokia.com/sr/25-3/7750-sr/books/interface-configuration/ports.html",
+   "note": "문서 예시 1/1/12 · 2/1/3",
+   "mdef": "1"
+  },
+  {
+   "id": "sros-c",
+   "vendor": "Nokia",
+   "label": "SR OS 커넥터형 슬롯/MDA/c커넥터/1 (7750 SR-s·7250 IXR 신형)",
+   "tpl": {
+    "1G": "$S/$M/c{1}/1",
+    "10G": "$S/$M/c{1}/1",
+    "100G": "$S/$M/c{1}/1"
+   },
+   "chk": 0,
+   "src": "https://documentation.nokia.com/sr/25-3/7750-sr/books/interface-configuration/ports.html",
+   "note": "커넥터 표기는 확인 필요",
+   "mdef": "1"
+  },
+  {
+   "id": "exos-slot",
+   "vendor": "Extreme",
+   "label": "EXOS 스택·섀시 슬롯:포트 (BlackDiamond·SummitStack)",
+   "tpl": {
+    "1G": "$S:{1}",
+    "10G": "$S:{1}",
+    "100G": "$S:{1}"
+   },
+   "chk": 0,
+   "src": "",
+   "note": "확인 필요",
+   "mdef": "0"
+  },
+  {
+   "id": "exos",
+   "vendor": "Extreme",
+   "label": "EXOS 단독 장비 포트 번호",
+   "tpl": {
+    "1G": "{1}",
+    "10G": "{1}",
+    "100G": "{1}"
+   },
+   "chk": 0,
+   "src": "",
+   "note": "확인 필요",
+   "mdef": "0"
   }
  ]
 }
